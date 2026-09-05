@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Day {
+  id        Int         @id @default(autoincrement())
+  name      String      //Senin, Selasa
+  code      String      @unique //SEN, SEL
+  schedules Schedule[]  //Relasi One-to-Many ke Schedule
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Bell {
+  id          Int         @id @default(autoincrement())
+  name        String      //Bel Masuk, Jam Pertama
+  description String?
+  sound       String?
+  schedules   Schedule[]  //Relasi One-to-Many ke Schedule
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Schedule {
+  id        Int       @id @default(autoincrement())
+  dayId     Int
+  bellId    Int
+  name      String
+  startTime String    //Format  jam:menit:detik
+  endTime   String    //Format  jam:menit:detik
+  order     Int       //Urutan bel: 1,2,3
+  isActive  Boolean   @default(true)
+
+  //Relasi
+  day       Day       @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  bell      Bell      @relation(fields: [bellId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
