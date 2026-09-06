@@ -2,6 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import md5 = require('md5');
 
 @Injectable()
@@ -10,6 +11,12 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
+
+  async register(registerDto: RegisterDto) {
+  // Logika simpan user ke database (misal Prisma / TypeORM)
+  // Hash password sebelum disimpan
+  return { message: 'User berhasil didaftarkan' };
+}
 
   async login(loginDto: LoginDto) {
     // 1. Cari user berdasarkan email
