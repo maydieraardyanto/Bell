@@ -13,9 +13,33 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-  // Logika simpan user ke database (misal Prisma / TypeORM)
-  // Hash password sebelum disimpan
-  return { message: 'User berhasil didaftarkan' };
+  // 1. Cek apakah email sudah terdaftar
+  const existingUser = await this.usersService.findOneForAuth(registerDto.email);
+  if (existingUser) {
+    throw new HttpException(
+      { success: false, message: 'Email sudah terdaftar' },
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  // 2. Hash password dengan MD5 dan simpan user baru
+  const hashedPassword = md5(registerDto.password);
+  const newUser = await this.usersService.create({
+    name: registerDto.name,
+    email: registerDto.email,
+    password: hashedPassword,
+  });
+
+  // 3. Akses properti dari newUser.data
+  return {
+    success: true,
+    message: 'User berhasil didaftarkan',
+    data: {
+      id: newUser.data.id,
+      name: newUser.data.name,
+      email: newUser.data.email,
+    },
+  };
 }
 
   async login(loginDto: LoginDto) {
