@@ -8,13 +8,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    UsersModule, // Membutuhkan UsersModule agar bisa akses UsersService
+    UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' }, // Token kedaluwarsa dalam 1 hari
+        // Tambahkan || 'secret-key-bel-sekolah-otomatis'
+        secret: configService.get<string>('JWT_SECRET') || 'secret-key-bel-sekolah-otomatis',
+        signOptions: { expiresIn: '1d' },
       }),
     }),
   ],
