@@ -22,13 +22,12 @@ export class AuthService {
     );
   }
 
-  // 2. Hash password dengan MD5 dan simpan user baru
-  const hashedPassword = md5(registerDto.password);
-  const newUser = await this.usersService.create({
-    name: registerDto.name,
-    email: registerDto.email,
-    password: hashedPassword,
-  });
+  // Di auth.service.ts, TIDAK PERLU di-hash lagi:
+const newUser = await this.usersService.create({
+  name: registerDto.name,
+  email: registerDto.email,
+  password: registerDto.password, // kirim password biasa
+});
 
   // 3. Akses properti dari newUser.data
   return {
